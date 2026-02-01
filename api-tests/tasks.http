@@ -4,7 +4,7 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-    "title": "Build some cool",
+    "title": "Makng some",
     "status": "PENDING"
 }
 

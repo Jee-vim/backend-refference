@@ -1,18 +1,52 @@
 import { Request, Response } from "express";
 import pool from "../db/pool";
-import { sendResponse } from "../utils/lib";
+import { sendPaginatedResponse, sendResponse } from "../utils/lib";
 
-// add search query
 export const getProducts = async (req: Request, res: Response) => {
-  const { sort } = req.query;
-  let orderBy = "ORDER BY created_at DESC";
+  try {
+    const { sort, search } = req.query as any;
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
 
-  if (sort === "oldest") {
-    orderBy = "ORDER BY created_at ASC";
+    let conditions = [];
+    let params: any[] = [];
+
+    if (search) {
+      params.push(`%${search}%`);
+      conditions.push(`name ILIKE $${params.length}`);
+    }
+
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+
+    // 2. Handle Sorting
+    let orderBy = "ORDER BY created_at DESC";
+    if (sort === "oldest") {
+      orderBy = "ORDER BY created_at ASC";
+    }
+
+    // 3. Data Query
+    const dataSql = `SELECT * FROM products ${whereClause} ${orderBy} LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
+    const result = await pool.query(dataSql, [...params, limit, offset]);
+
+    // 4. Count Query
+    const countSql = `SELECT COUNT(*) FROM products ${whereClause}`;
+    const countResult = await pool.query(countSql, params);
+    const total_items = parseInt(countResult.rows[0].count) || 0;
+
+    return sendPaginatedResponse(
+      res,
+      200,
+      result.rows,
+      total_items,
+      page,
+      limit,
+      "Products retrieved successfully"
+    );
+  } catch (error: any) {
+    console.error("GET_PRODUCTS_ERROR:", error.message);
+    return sendResponse(res, 500, null, "Internal server error");
   }
-
-  const result = await pool.query(`SELECT * FROM products ${orderBy}`);
-  return sendResponse(res, 200, result.rows, "Products retrieved successfully");
 };
 
 export const getProductById = async (req: Request, res: Response) => {

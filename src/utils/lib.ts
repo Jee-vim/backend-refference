@@ -15,23 +15,27 @@ export const sendPaginatedResponse = (
   code: number,
   data: any[],
   total_items: number,
-  page: number,
-  limit: number,
+  page: any,
+  limit: any,
   message: string = ""
 ) => {
-  const total_pages = Math.ceil(total_items / limit);
+  const safePage = Math.max(1, parseInt(page) || 1);
+  const safeLimit = Math.max(1, parseInt(limit) || 10);
+  const safeTotalItems = Math.max(0, total_items || 0);
+
+  const total_pages = Math.ceil(safeTotalItems / safeLimit);
 
   return res.status(code).json({
     success: code >= 200 && code < 300,
     code,
     message,
     data: {
-      items: data,
+      items: data || [],
       pagination: {
-        total_items,
+        total_items: safeTotalItems,
         total_pages,
-        current_page: page,
-        limit,
+        current_page: safePage,
+        limit: safeLimit,
       },
     },
   });
@@ -42,7 +46,6 @@ export const validate = (schema: z.ZodTypeAny, target: "body" | "query" | "param
     try {
       const parsedData = await schema.parseAsync(req[target] || {});
 
-      // Instead of req[target] = parsedData, do this:
       if (target === "query" || target === "params") {
         Object.assign(req[target], parsedData);
       } else {

@@ -14,7 +14,6 @@ export const createTask = async (req: Request, res: Response) => {
 
     return sendResponse(res, 201, result.rows[0], "Task successfully created");
   } catch (error: any) {
-    console.error("CREATE_TASK_ERROR:", error.message);
     return sendResponse(res, 500, null, "Internal server error");
   }
 };
@@ -22,21 +21,30 @@ export const createTask = async (req: Request, res: Response) => {
 export const getTasks = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).userId;
-    const { page, limit, status } = (req.query as any) || {};
+    const { status, search } = (req.query as any) || {};
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
     const offset = (page - 1) * limit;
 
-    let filterQuery = "WHERE user_id = $1";
+    let conditions = ["user_id = $1"];
     let params: any[] = [userId];
 
     if (status) {
-      filterQuery += " AND status = $2";
       params.push(status);
+      conditions.push(`status = $${params.length}`);
     }
 
-    const dataSql = `SELECT * FROM tasks ${filterQuery} ORDER BY created_at DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
+    if (search) {
+      params.push(`%${search}%`); // The % symbols are for partial matching
+      conditions.push(`title ILIKE $${params.length}`); // ILIKE is case-insensitive
+    }
+
+    const whereClause = `WHERE ${conditions.join(" AND ")}`;
+
+    const dataSql = `SELECT * FROM tasks ${whereClause} ORDER BY created_at DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
     const dataQuery = await pool.query(dataSql, [...params, limit, offset]);
 
-    const countSql = `SELECT COUNT(*) FROM tasks ${filterQuery}`;
+    const countSql = `SELECT COUNT(*) FROM tasks ${whereClause}`;
     const countQuery = await pool.query(countSql, params);
 
     const total_items = parseInt(countQuery.rows[0].count);

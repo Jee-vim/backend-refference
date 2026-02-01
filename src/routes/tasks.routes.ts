@@ -10,10 +10,10 @@ const router = Router();
 router.use(auth);
 
 router.get("/", validate(queryTaskSchema, "query"), getTasks);
+router.post("/", validate(createTaskSchema), createTask);
+router.put("/:id", validate(createTaskSchema), updateTask);
 router.get("/:id", getTaskById);
 router.delete("/:id", deleteTask);
 router.post("/delete/batch", deleteBatchTasks);
-router.post("/", validate(createTaskSchema), createTask);
-router.put("/:id", validate(createTaskSchema), updateTask);
 
 export default router;
