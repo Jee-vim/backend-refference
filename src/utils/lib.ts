@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { z, ZodError } from "zod";
+import rateLimit from "express-rate-limit";
 
 export const getSafeParams = (query: any) => {
   const page = Math.max(1, parseInt(query.page) || 1);
@@ -72,3 +73,23 @@ export const validate = (schema: z.ZodTypeAny, target: "body" | "query" | "param
     }
   };
 };
+
+export const createLimiter = (maxRequests: number, windowMinutes: number) => {
+  return rateLimit({
+    windowMs: windowMinutes * 60 * 1000,
+    max: maxRequests,
+    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+    handler: (_, res) => {
+      return sendResponse(
+        res,
+        429,
+        null,
+        `Too many requests. Please try again after ${windowMinutes} minutes.`
+      );
+    },
+  });
+};
+
+export const generalLimiter = createLimiter(100, 15);
+export const authLimiter = createLimiter(5, 10);

@@ -2,9 +2,10 @@ import express, { Request, Response, NextFunction } from "express";
 import authRoutes from "./routes/auth.routes";
 import taskRoutes from "./routes/tasks.routes";
 import productRoutes from "./routes/products.routes";
-import { sendResponse } from "./utils/lib";
+import { generalLimiter, sendResponse } from "./utils/lib";
 
 const app = express();
+app.use(generalLimiter)
 
 app.use(express.json());
 
