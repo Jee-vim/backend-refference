@@ -3,126 +3,115 @@ import pool from "../db/pool";
 import { sendResponse, sendPaginatedResponse } from "../utils/lib";
 
 export const createTask = async (req: Request, res: Response) => {
-  const { title } = req.body;
-  const userId = (req as any).userId;
+  try {
+    const { title, status } = req.body || {};
+    const userId = (req as any).userId;
 
-  const result = await pool.query(
-    "INSERT INTO tasks (user_id, title) VALUES ($1, $2) RETURNING *",
-    [userId, title]
-  );
+    const result = await pool.query(
+      "INSERT INTO tasks (user_id, title, status) VALUES ($1, $2, $3) RETURNING *",
+      [userId, title, status]
+    );
 
-  return sendResponse(res, 201, result.rows[0], "Task successfully created");
+    return sendResponse(res, 201, result.rows[0], "Task successfully created");
+  } catch (error: any) {
+    console.error("CREATE_TASK_ERROR:", error.message);
+    return sendResponse(res, 500, null, "Internal server error");
+  }
 };
 
 export const getTasks = async (req: Request, res: Response) => {
-  const userId = (req as any).userId;
-  const page = parseInt(req.query.page as string) || 1;
-  const limit = parseInt(req.query.limit as string) || 10;
-  const offset = (page - 1) * limit;
+  try {
+    const userId = (req as any).userId;
+    const { page, limit, status } = (req.query as any) || {};
+    const offset = (page - 1) * limit;
 
-  const dataQuery = await pool.query(
-    "SELECT * FROM tasks WHERE user_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3",
-    [userId, limit, offset]
-  );
+    let filterQuery = "WHERE user_id = $1";
+    let params: any[] = [userId];
 
-  const countQuery = await pool.query(
-    "SELECT COUNT(*) FROM tasks WHERE user_id = $1",
-    [userId]
-  );
-  
-  const total_items = parseInt(countQuery.rows[0].count);
+    if (status) {
+      filterQuery += " AND status = $2";
+      params.push(status);
+    }
 
-  return sendPaginatedResponse(
-    res, 
-    200, 
-    dataQuery.rows, 
-    total_items, 
-    page, 
-    limit, 
-    "Tasks retrieved successfully"
-  );
+    const dataSql = `SELECT * FROM tasks ${filterQuery} ORDER BY created_at DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
+    const dataQuery = await pool.query(dataSql, [...params, limit, offset]);
+
+    const countSql = `SELECT COUNT(*) FROM tasks ${filterQuery}`;
+    const countQuery = await pool.query(countSql, params);
+
+    const total_items = parseInt(countQuery.rows[0].count);
+
+    return sendPaginatedResponse(res, 200, dataQuery.rows, total_items, page, limit, "Tasks retrieved successfully");
+  } catch (error: any) {
+    console.error("GET_TASKS_ERROR:", error.message);
+    return sendResponse(res, 500, null, "Internal server error");
+  }
 };
 
 export const getTaskById = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const userId = (req as any).userId;
+  try {
+    const { id } = req.params;
+    const userId = (req as any).userId;
 
-  const result = await pool.query(
-    "SELECT * FROM tasks WHERE id = $1 AND user_id = $2",
-    [id, userId]
-  );
+    const result = await pool.query("SELECT * FROM tasks WHERE id = $1 AND user_id = $2", [id, userId]);
 
-  if (result.rowCount === 0) {
-    return sendResponse(res, 404, null, "Task not found");
+    if (result.rowCount === 0) return sendResponse(res, 404, null, "Task not found");
+    return sendResponse(res, 200, result.rows[0], "Task retrieved successfully");
+  } catch (error: any) {
+    console.error("GET_BY_ID_ERROR:", error.message);
+    return sendResponse(res, 500, null, "Internal server error");
   }
-
-  return sendResponse(res, 200, result.rows[0], "Task retrieved successfully");
 };
 
-type TaskStatus = 'PENDING' | 'IN_PROGRESS' | 'COMPLETED';
-
 export const updateTask = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const { title, status } = req.body as { title: string, status: TaskStatus };
-  const userId = (req as any).userId;
-
-  const validStatuses: TaskStatus[] = ['PENDING', 'IN_PROGRESS', 'COMPLETED'];
-
-  if (status && !validStatuses.includes(status)) {
-    return sendResponse(res, 400, null, `Invalid status. Must be one of: ${validStatuses.join(', ')}`);
-  }
-
   try {
+    const { id } = req.params;
+    const { title, status } = req.body || {};
+    const userId = (req as any).userId;
+
     const result = await pool.query(
-      "UPDATE tasks SET title = $1, status = $2 WHERE id = $3 AND user_id = $4 RETURNING *",
+      "UPDATE tasks SET title = COALESCE($1, title), status = COALESCE($2, status) WHERE id = $3 AND user_id = $4 RETURNING *",
       [title, status, id, userId]
     );
 
-    if (result.rowCount === 0) {
-      return sendResponse(res, 404, null, "Task not found");
-    }
-
+    if (result.rowCount === 0) return sendResponse(res, 404, null, "Task not found");
     return sendResponse(res, 200, result.rows[0], "Task updated successfully");
   } catch (error: any) {
-    if (error.code === '22P02') {
-      return sendResponse(res, 400, null, "Invalid status format");
-    }
+    console.error("UPDATE_TASK_ERROR:", error.message);
     return sendResponse(res, 500, null, "Internal server error");
   }
 };
 
 export const deleteTask = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const userId = (req as any).userId;
+  try {
+    const { id } = req.params;
+    const userId = (req as any).userId;
 
-  const result = await pool.query(
-    "DELETE FROM tasks WHERE id = $1 AND user_id = $2 RETURNING id",
-    [id, userId]
-  );
+    const result = await pool.query("DELETE FROM tasks WHERE id = $1 AND user_id = $2 RETURNING id", [id, userId]);
 
-  if (result.rowCount === 0) {
-    return sendResponse(res, 404, null, "Task not found");
+    if (result.rowCount === 0) return sendResponse(res, 404, null, "Task not found");
+    return sendResponse(res, 200, null, "Task deleted successfully");
+  } catch (error: any) {
+    console.error("DELETE_TASK_ERROR:", error.message);
+    return sendResponse(res, 500, null, "Internal server error");
   }
-
-  return sendResponse(res, 200, null, "Task deleted successfully");
 };
 
 export const deleteBatchTasks = async (req: Request, res: Response) => {
-  const { ids } = req.body;
-  const userId = (req as any).userId;
+  try {
+    const { ids } = req.body || {};
+    const userId = (req as any).userId;
 
-  if (!Array.isArray(ids) || ids.length === 0) {
-    return sendResponse(res, 400, null, "Please provide an array of task IDs");
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return sendResponse(res, 400, null, "Please provide an array of task IDs");
+    }
+
+    const result = await pool.query("DELETE FROM tasks WHERE id = ANY($1) AND user_id = $2 RETURNING id", [ids, userId]);
+
+    if (result.rowCount === 0) return sendResponse(res, 404, null, "No tasks found or already deleted");
+    return sendResponse(res, 200, { deletedCount: result.rowCount }, "Tasks deleted successfully");
+  } catch (error: any) {
+    console.error("DELETE_BATCH_ERROR:", error.message);
+    return sendResponse(res, 500, null, "Internal server error");
   }
-
-  const result = await pool.query(
-    "DELETE FROM tasks WHERE id = ANY($1) AND user_id = $2 RETURNING id",
-    [ids, userId]
-  );
-
-  if (result.rowCount === 0) {
-    return sendResponse(res, 404, null, "No tasks found or already deleted");
-  }
-
-  return sendResponse(res, 200, { deletedCount: result.rowCount }, "Tasks deleted successfully");
 };

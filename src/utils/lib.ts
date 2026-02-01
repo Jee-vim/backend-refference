@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { z, ZodError } from "zod";
 
 export const sendResponse = (res: Response, code: number, data: any = null, message: string = "") => {
   return res.status(code).json({
@@ -36,20 +37,27 @@ export const sendPaginatedResponse = (
   });
 };
 
-export const validateBody = (requiredFields: string[]) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    const errors: string[] = [];
+export const validate = (schema: z.ZodTypeAny, target: "body" | "query" | "params" = "body") => {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const parsedData = await schema.parseAsync(req[target] || {});
 
-    requiredFields.forEach((field) => {
-      if (req.body[field] === undefined || req.body[field] === null || req.body[field] === "") {
-        errors.push(`${field} is required`);
+      // Instead of req[target] = parsedData, do this:
+      if (target === "query" || target === "params") {
+        Object.assign(req[target], parsedData);
+      } else {
+        req[target] = parsedData;
       }
-    });
 
-    if (errors.length > 0) {
-      return sendResponse(res, 400, null, errors.join(", "));
+      next();
+    } catch (error: any) {
+      if (error instanceof ZodError) {
+        const message = error.issues
+          .map((e) => `${e.path.join(".")}: ${e.message}`)
+          .join(", ");
+        return sendResponse(res, 400, null, message);
+      }
+      return sendResponse(res, 500, null, "Internal server error");
     }
-
-    next();
   };
 };

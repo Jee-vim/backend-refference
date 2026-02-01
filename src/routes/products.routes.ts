@@ -1,23 +1,24 @@
 import { Router } from "express";
-import { 
-  getProducts, 
-  getProductById, 
-  createProduct, 
-  updateProduct, 
-  deleteProduct, 
-  deleteBatchProducts 
+import {
+  getProducts,
+  getProductById,
+  createProduct,
+  updateProduct,
+  deleteProduct,
+  deleteBatchProducts
 } from "../controllers/products.controller";
 import auth from "../middleware/auth.middleware";
+import { validate } from "../utils/lib";
+import { createProductSchema } from "../schemas/products.schema";
+import { queryGlobalSchema } from "../schemas/global.schema";
 
 const router = Router();
 
-// Public routes
-router.get("/", getProducts);
+router.get("/", validate(queryGlobalSchema), getProducts);
 router.get("/:id", getProductById);
 
-// Protected routes
-router.post("/", auth, createProduct);
-router.put("/:id", auth, updateProduct);
+router.post("/", auth, validate(createProductSchema), createProduct);
+router.put("/:id", auth, validate(createProductSchema), updateProduct);
 router.delete("/:id", auth, deleteProduct);
 router.post("/delete/batch", auth, deleteBatchProducts);
 

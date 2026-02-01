@@ -3,7 +3,7 @@ POST {{baseUrl}}/auth/register
 Content-Type: application/json
 
 {
-    "email": "tests@example.com",
+    "email": "testpass@example.com",
     "password": "password123"
 }
 
@@ -12,7 +12,7 @@ POST {{baseUrl}}/auth/login
 Content-Type: application/json
 
 {
-    "email": "tests@example.com",
+    "email": "testpass@example.com",
     "password": "password123"
 }
 

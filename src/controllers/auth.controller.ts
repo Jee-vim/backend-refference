@@ -26,7 +26,6 @@ export const register = async (req: Request, res: Response) => {
 };
 
 export const login = async (req: Request, res: Response) => {
-  // #swagger.tags = ['Auth']
   const { email, password } = req.body;
 
   const result = await pool.query(

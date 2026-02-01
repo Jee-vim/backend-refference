@@ -2,14 +2,16 @@
   "compilerOptions": {
     "target": "ES2020",
     "module": "CommonJS",
-    "moduleResolution": "node", // Add this line
+    "moduleResolution": "node",
+    "baseUrl": ".", 
+    "paths": {
+      "src/*": ["src/*"]
+    },
     "rootDir": "src",
     "outDir": "dist",
     "strict": true,
     "esModuleInterop": true,
-    "baseUrl": ".",            // Add this line
-    "paths": {
-      "*": ["node_modules/*"]  // Add this line
-    }
-  }
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*"]
 }
