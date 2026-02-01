@@ -1,0 +1,24 @@
+import { Router } from "express";
+import { 
+  getProducts, 
+  getProductById, 
+  createProduct, 
+  updateProduct, 
+  deleteProduct, 
+  deleteBatchProducts 
+} from "../controllers/products.controller";
+import auth from "../middleware/auth.middleware";
+
+const router = Router();
+
+// Public routes
+router.get("/", getProducts);
+router.get("/:id", getProductById);
+
+// Protected routes
+router.post("/", auth, createProduct);
+router.put("/:id", auth, updateProduct);
+router.delete("/:id", auth, deleteProduct);
+router.post("/delete/batch", auth, deleteBatchProducts);
+
+export default router;

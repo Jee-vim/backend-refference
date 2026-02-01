@@ -1,0 +1,32 @@
+import express, { Request, Response, NextFunction } from "express";
+import authRoutes from "./routes/auth.routes";
+import taskRoutes from "./routes/tasks.routes";
+import productRoutes from "./routes/products.routes";
+import { sendResponse } from "./utils/lib";
+
+const app = express();
+
+app.use(express.json());
+
+app.use((err: any, res: Response, next: NextFunction) => {
+  if (err instanceof SyntaxError && "status" in err && "body" in err) {
+    return sendResponse(res, 400, null, "Invalid JSON format");
+  }
+  next();
+});
+
+app.use("/auth", authRoutes);
+app.use("/tasks", taskRoutes);
+app.use("/products", productRoutes);
+
+app.use((req: Request, res: Response) => {
+  sendResponse(res, 404, null, `Route ${req.originalUrl} not found`);
+});
+
+app.use((err: any, res: Response) => {
+  const status = err.status || 500;
+  const message = err.message || "Internal Server Error";
+  sendResponse(res, status, null, message);
+});
+
+export default app;

@@ -1,0 +1,38 @@
+### Create Task
+POST {{baseUrl}}/tasks
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "title": "Build some"
+}
+
+### Get all Tasks
+GET {{baseUrl}}/tasks
+Authorization: Bearer {{token}}
+
+### Get Task by ID
+GET {{baseUrl}}/tasks/097c9f8b-15f3-4cac-b277-ed400989dbe9
+kuthorization: Bearer {{token}}
+
+### Update Task
+PUT {{baseUrl}}/tasks/097c9f8b-15f3-4cac-b277-ed400989dbe9
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "title": "Updated Task Title",
+    "status": "PENDING"
+}
+
+### Delete Task
+DELETE {{baseUrl}}/tasks/906c657f-7332-4256-b126-26fbda71c82c
+Authorization: Bearer {{token}}
+
+### Batch Delete Task
+POST {{baseUrl}}/tasks/delete/batch
+Authorization: Bearer {{token}}
+
+{
+  "ids": ["cba52d50-5676-47c8-90ab-cccadf4da229","1094f2d9-f18c-4212-8c91-c07933b72e84","724094f7-2543-47f7-aa08-a039df31ade8","b520ddf5-f1e8-4c78-ab82-f127f822ea60","b079e1fc-ecfa-46d6-a7b5-ef2f5df3ba8b","2397a133-273a-482a-aee5-e5da6121e312","ac49ddaa-5218-492e-b156-98789e04a368","d02d1cdf-5a84-4b98-902f-74d1c351a890","9c52b521-b9b1-4969-9518-84189b62c9b8"]
+}

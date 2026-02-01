@@ -1,0 +1,41 @@
+### Get All Products (Newest First)
+GET {{baseUrl}}/products?sort=newest
+
+### Get All Products (Oldest First)
+GET {{baseUrl}}/products?sort=oldest
+
+### Create Product
+POST {{baseUrl}}/products
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "My Bini",
+  "description": "My biniiii",
+  "price": 149.99,
+  "stock": 1
+}
+
+### Update Product
+PUT {{baseUrl}}/products/0aa2cbf9-d9fa-4e3a-9d01-a1d751a2b254
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Mechanical Keyboard Pro",
+  "description": "Updated version with wireless support",
+  "price": 179.99,
+  "stock": 30
+}
+
+### Batch Delete Products
+POST {{baseUrl}}/products/delete/batch
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "ids": [
+    "796d83a1-705b-4395-927b-23194a210d7a",
+    "f237890b-80a1-4c12-9876-0987654321ab"
+  ]
+}
