@@ -1,5 +1,42 @@
 ## TODO
-- rate limit 
+- ~~connect with postgreSQL~~
+- ~~auth jwt~~
+- ~~crud~~
+- ~~filters (search,pagination,sort)~~
+- ~~form validation~~
+- ~~rate-limiter~~
+- ~~centralize response~~
+- architecture
+    - controller vs service separation
+    - business logic not in routes
+- security
+    - helmet configuration
+    - input sanitization
+    - mass assignment protection
+    - SQL injection awareness (even with ORM)
+    - rate limit per user, not just IP
+- auth session
+    - CSRF protection
+    - session invalidation
+    - secure cookie flags
 - file uploads
-- transctions
-
+    - streaming uploads
+    - file size & type validation
+    - object storage (S3-compatible)
+    - signed URLs
+- database integrity & transactions
+    - database transactions (commit / rollback)
+    - isolation levels
+    - unique constraints & foreign keys
+    - indexes + explain analyze
+    - migrations (up + down)
+- performance 
+    - caching (Redis)
+    - background jobs / queues
+    - graceful shutdown
+    - connection pooling
+- testing
+    - unit tests (services, not routes)
+    - integration tests (API)
+    - test database setup
+    - auth edge cases
