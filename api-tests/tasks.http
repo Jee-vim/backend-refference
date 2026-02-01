@@ -9,7 +9,7 @@ Content-Type: application/json
 }
 
 ### Get all Tasks
-GET {{baseUrl}}/tasks
+GET {{baseUrl}}/tasks?search=cool
 Authorization: Bearer {{token}}
 
 ### Get Task by ID

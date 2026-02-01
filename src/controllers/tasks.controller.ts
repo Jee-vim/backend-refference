@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import pool from "../db/pool";
-import { sendResponse, sendPaginatedResponse } from "../utils/lib";
+import { sendResponse, sendPaginatedResponse, getSafeParams } from "../utils/lib";
 
 export const createTask = async (req: Request, res: Response) => {
   try {
@@ -22,9 +22,7 @@ export const getTasks = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).userId;
     const { status, search } = (req.query as any) || {};
-    const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 10;
-    const offset = (page - 1) * limit;
+    const { limit, page, offset } = getSafeParams(req.query)
 
     let conditions = ["user_id = $1"];
     let params: any[] = [userId];
@@ -51,7 +49,6 @@ export const getTasks = async (req: Request, res: Response) => {
 
     return sendPaginatedResponse(res, 200, dataQuery.rows, total_items, page, limit, "Tasks retrieved successfully");
   } catch (error: any) {
-    console.error("GET_TASKS_ERROR:", error.message);
     return sendResponse(res, 500, null, "Internal server error");
   }
 };

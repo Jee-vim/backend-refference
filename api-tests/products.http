@@ -1,5 +1,5 @@
 ### Get All Products (Newest First)
-GET {{baseUrl}}/products?sort=newest
+GET {{baseUrl}}/products?sort=newest&search=supp
 
 ### Get All Products (Oldest First)
 GET {{baseUrl}}/products?sort=oldest

@@ -1,6 +1,14 @@
 import { Request, Response, NextFunction } from "express";
 import { z, ZodError } from "zod";
 
+export const getSafeParams = (query: any) => {
+  const page = Math.max(1, parseInt(query.page) || 1);
+  const limit = Math.max(1, parseInt(query.limit) || 10);
+  const offset = (page - 1) * limit;
+
+  return { page, limit, offset };
+};
+
 export const sendResponse = (res: Response, code: number, data: any = null, message: string = "") => {
   return res.status(code).json({
     success: code >= 200 && code < 300,

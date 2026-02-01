@@ -1,35 +1,33 @@
 import { Request, Response } from "express";
 import pool from "../db/pool";
-import { sendPaginatedResponse, sendResponse } from "../utils/lib";
+import { getSafeParams, sendPaginatedResponse, sendResponse } from "../utils/lib";
 
 export const getProducts = async (req: Request, res: Response) => {
   try {
     const { sort, search } = req.query as any;
-    const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 10;
-    const offset = (page - 1) * limit;
+    const { limit, page, offset } = getSafeParams(req.query)
 
     let conditions = [];
     let params: any[] = [];
 
     if (search) {
-      params.push(`%${search}%`);
-      conditions.push(`name ILIKE $${params.length}`);
+      const cleanSearch = `%${search.trim()}%`;
+      params.push(cleanSearch);
+
+      const idx = params.length;
+      conditions.push(`(name ILIKE $${idx} OR COALESCE(description, '') ILIKE $${idx})`);
     }
 
     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
-    // 2. Handle Sorting
     let orderBy = "ORDER BY created_at DESC";
     if (sort === "oldest") {
       orderBy = "ORDER BY created_at ASC";
     }
 
-    // 3. Data Query
     const dataSql = `SELECT * FROM products ${whereClause} ${orderBy} LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
     const result = await pool.query(dataSql, [...params, limit, offset]);
 
-    // 4. Count Query
     const countSql = `SELECT COUNT(*) FROM products ${whereClause}`;
     const countResult = await pool.query(countSql, params);
     const total_items = parseInt(countResult.rows[0].count) || 0;
