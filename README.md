@@ -1,7 +1,11 @@
 ## TODO
 - ~~connect with postgreSQL~~
 - ~~auth jwt~~
-- ~~crud~~
+    - auth session
+    - CSRF protection
+    - session invalidation
+    - secure cookie flags
+- ~~CRUD~~
 - ~~filters (search,pagination,sort)~~
 - ~~form validation~~
 - ~~rate-limiter~~
@@ -15,10 +19,6 @@
     - mass assignment protection
     - SQL injection awareness (even with ORM)
     - rate limit per user, not just IP
-- auth session
-    - CSRF protection
-    - session invalidation
-    - secure cookie flags
 - file uploads
     - streaming uploads
     - file size & type validation
@@ -40,3 +40,11 @@
     - integration tests (API)
     - test database setup
     - auth edge cases
+- API design
+    - consistent status codes
+    - DTOs / schemas
+    - versioning strategy
+- logging & observability
+    - structured logs
+    - request IDs
+    - audit logs
