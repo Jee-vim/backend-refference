@@ -30,6 +30,7 @@
     - unique constraints & foreign keys
     - indexes + explain analyze
     - migrations (up + down)
+    - discount
 - performance 
     - caching (Redis)
     - background jobs / queues
