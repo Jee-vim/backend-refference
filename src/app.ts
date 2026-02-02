@@ -3,6 +3,7 @@ import authRoutes from "./routes/auth.routes";
 import taskRoutes from "./routes/tasks.routes";
 import productRoutes from "./routes/products.routes";
 import { generalLimiter, sendResponse } from "./utils/lib";
+import { errorHandler } from "./middleware/errror.middleware";
 
 const app = express();
 app.use(generalLimiter)
@@ -24,10 +25,6 @@ app.use((req: Request, res: Response) => {
   sendResponse(res, 404, null, `Route ${req.originalUrl} not found`);
 });
 
-app.use((err: any, res: Response) => {
-  const status = err.status || 500;
-  const message = err.message || "Internal Server Error";
-  sendResponse(res, status, null, message);
-});
+app.use(errorHandler);
 
 export default app;

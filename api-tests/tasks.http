@@ -14,7 +14,7 @@ Authorization: Bearer {{token}}
 
 ### Get Task by ID
 GET {{baseUrl}}/tasks/097c9f8b-15f3-4cac-b277-ed400989dbe9
-kuthorization: Bearer {{token}}
+Authorization: Bearer {{token}}
 
 ### Update Task
 PUT {{baseUrl}}/tasks/097c9f8b-15f3-4cac-b277-ed400989dbe9
