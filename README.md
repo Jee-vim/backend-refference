@@ -15,7 +15,7 @@
     - ~~controller vs service separation~~
     - ~~business logic not in routes~~
 - security
-    - helmet configuration
+    - ~~helmet configuration~~
     - ~~input sanitization~~
     - mass assignment protection
     - SQL injection awareness (even with ORM)

@@ -1,6 +1,8 @@
 import express, { Request, Response, NextFunction } from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import helmet from "helmet";
+
 import authRoutes from "./routes/auth.routes";
 import taskRoutes from "./routes/tasks.routes";
 import productRoutes from "./routes/products.routes";
@@ -9,6 +11,11 @@ import { generalLimiter, sendResponse } from "./utils/lib";
 import { errorHandler } from "./middleware/errror.middleware";
 
 const app = express();
+app.use(helmet({
+  // Disables the Content-Security-Policy during development 
+  contentSecurityPolicy: process.env.NODE_ENV === "production" ? undefined : false,
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
 app.use(cors({
   origin: (_, callback) => {
     callback(null, true);
@@ -22,11 +29,11 @@ app.use(generalLimiter)
 app.use(express.json());
 app.use(cookieParser());
 
-app.use((err: any, res: Response, next: NextFunction) => {
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   if (err instanceof SyntaxError && "status" in err && "body" in err) {
     return sendResponse(res, 400, null, "Invalid JSON format");
   }
-  next();
+  next(err);
 });
 
 app.use("/auth", authRoutes);
