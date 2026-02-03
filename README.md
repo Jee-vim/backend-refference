@@ -1,10 +1,10 @@
 ## TODO
 - ~~connect with postgreSQL~~
 - ~~auth jwt~~
-    - ~~auth session
-    - CSRF protection
-    - session invalidation
-    - secure cookie flags~~
+    - ~~auth session~~
+    - ~~CSRF protection~~
+    - ~~session invalidation~~
+    - ~~secure cookie flags~~
 - ~~profile~~
 - ~~CRUD~~
 - ~~filters (search,pagination,sort)~~
