@@ -1,0 +1,16 @@
+### Get Profile By ID
+GET {{baseUrl}}/profile/8cf6ce67-c67a-4e0b-bab5-2b1d987197f5
+Authorization: Bearer {{token}}
+ 
+### Update Product
+PUT {{baseUrl}}/profile/8cf6ce67-c67a-4e0b-bab5-2b1d987197f5
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "profile": {
+    "name": "change namedd",
+    "avatar": "https://",
+  },
+  "email": "change@ecamek.com"
+}

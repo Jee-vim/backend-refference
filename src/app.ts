@@ -2,6 +2,7 @@ import express, { Request, Response, NextFunction } from "express";
 import authRoutes from "./routes/auth.routes";
 import taskRoutes from "./routes/tasks.routes";
 import productRoutes from "./routes/products.routes";
+import profileRoutes from "./routes/profile.routes";
 import { generalLimiter, sendResponse } from "./utils/lib";
 import { errorHandler } from "./middleware/errror.middleware";
 
@@ -18,6 +19,7 @@ app.use((err: any, res: Response, next: NextFunction) => {
 });
 
 app.use("/auth", authRoutes);
+app.use("/profile", profileRoutes);
 app.use("/tasks", taskRoutes);
 app.use("/products", productRoutes);
 

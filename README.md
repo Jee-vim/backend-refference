@@ -5,6 +5,7 @@
     - CSRF protection
     - session invalidation
     - secure cookie flags
+- profile (in_progress)
 - ~~CRUD~~
 - ~~filters (search,pagination,sort)~~
 - ~~form validation~~
