@@ -8,11 +8,12 @@ import {
   deleteBatchProducts
 } from "../controllers/products.controller";
 import auth from "../middleware/auth.middleware";
-import { validate } from "../utils/lib";
+import { userLimiter, validate } from "../utils/lib";
 import { createProductSchema } from "../schemas/products.schema";
 import { queryGlobalSchema } from "../schemas/global.schema";
 
 const router = Router();
+router.use(userLimiter)
 
 router.get("/", validate(queryGlobalSchema), getProducts);
 router.get("/:id", getProductById);

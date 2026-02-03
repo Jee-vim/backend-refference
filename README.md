@@ -14,12 +14,12 @@
 - ~~architecture~~
     - ~~controller vs service separation~~
     - ~~business logic not in routes~~
-- security
+- ~~security~~
     - ~~helmet configuration~~
     - ~~input sanitization~~
-    - mass assignment protection
-    - SQL injection awareness (even with ORM)
-    - rate limit per user, not just IP
+    - ~~mass assignment protection~~
+    - ~~SQL injection awareness (even with ORM)~~
+    - ~~rate limit per user, not just IP~~
 - file uploads
     - streaming uploads
     - file size & type validation

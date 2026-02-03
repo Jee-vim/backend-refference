@@ -78,8 +78,12 @@ export const createLimiter = (maxRequests: number, windowMinutes: number) => {
   return rateLimit({
     windowMs: windowMinutes * 60 * 1000,
     max: maxRequests,
-    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+    standardHeaders: true,
+    legacyHeaders: false,
+    // This keyGenerator works for both public and private routes
+    keyGenerator: (req: any) => req.user?.userId || req.ip,
+    // Disable the IPv6 warning for custom key generators
+    validate: { keyGeneratorIpFallback: false },
     handler: (_, res) => {
       return sendResponse(
         res,
@@ -91,5 +95,8 @@ export const createLimiter = (maxRequests: number, windowMinutes: number) => {
   });
 };
 
-export const generalLimiter = createLimiter(100, 15);
+const MINUTE = 15
+const LIMIT = 100
 export const authLimiter = createLimiter(5, 10);
+export const generalLimiter = createLimiter(LIMIT, MINUTE);
+export const userLimiter = createLimiter(LIMIT, MINUTE);
