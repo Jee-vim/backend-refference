@@ -7,6 +7,7 @@ CREATE TABLE users (
   password_hash TEXT NOT NULL,
   profile JSONB NOT NULL DEFAULT '{"name": null, "avatar": null}',
   created_at TIMESTAMP DEFAULT NOW()
+  updated_at TIMESTAMP DEFAULT NOW()
 );
 
 CREATE TABLE tasks (

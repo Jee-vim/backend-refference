@@ -10,7 +10,7 @@ Content-Type: application/json
 {
   "profile": {
     "name": "change namedd",
-    "avatar": "https://",
+    "avatar": null
   },
   "email": "change@ecamek.com"
 }

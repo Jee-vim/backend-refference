@@ -16,9 +16,9 @@ export const getProfile = async (req: Request, res: Response, next: NextFunction
 export const updateProfile = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = (req as any).userId;
-    const updateData = req.body;
+    const { profile, email } = req.body;
 
-    const result = await profileService.update(userId, updateData);
+    const result = await profileService.update(userId, { profile, email });
 
     return sendResponse(res, 200, result, "Profile updated successfully");
   } catch (err) {
