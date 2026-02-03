@@ -1,22 +1,22 @@
 ## TODO
 - ~~connect with postgreSQL~~
 - ~~auth jwt~~
-    - auth session
+    - ~~auth session
     - CSRF protection
     - session invalidation
-    - secure cookie flags
-- profile (in_progress)
+    - secure cookie flags~~
+- ~~profile~~
 - ~~CRUD~~
 - ~~filters (search,pagination,sort)~~
 - ~~form validation~~
 - ~~rate-limiter~~
 - ~~centralize response~~
-- architecture
-    - controller vs service separation
-    - business logic not in routes
+- ~~architecture~~
+    - ~~controller vs service separation~~
+    - ~~business logic not in routes~~
 - security
     - helmet configuration
-    - input sanitization
+    - ~~input sanitization~~
     - mass assignment protection
     - SQL injection awareness (even with ORM)
     - rate limit per user, not just IP

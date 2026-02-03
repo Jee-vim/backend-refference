@@ -17,3 +17,17 @@ Content-Type: application/json
     "password": "password123"
 }
 
+
+### Refresh
+POST {{baseUrl}}/auth/refresh
+Content-Type: application/json
+
+{ }
+
+
+### Logout
+POST {{baseUrl}}/auth/refresh
+Content-Type: application/json
+
+{ }
+

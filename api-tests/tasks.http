@@ -4,12 +4,12 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-    "title": "Makng some",
+    "title": "cooking",
     "status": "PENDING"
 }
 
 ### Get all Tasks
-GET {{baseUrl}}/tasks?search=cool
+GET {{baseUrl}}/tasks
 Authorization: Bearer {{token}}
 
 ### Get Task by ID
@@ -27,7 +27,7 @@ Content-Type: application/json
 }
 
 ### Delete Task
-DELETE {{baseUrl}}/tasks/906c657f-7332-4256-b126-26fbda71c82c
+DELETE {{baseUrl}}/tasks/95cb8171-b149-4ab1-8079-b67340e205bc
 Authorization: Bearer {{token}}
 
 ### Batch Delete Task
