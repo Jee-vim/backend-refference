@@ -5,7 +5,7 @@ CREATE TABLE users (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   email TEXT UNIQUE NOT NULL,
   password_hash TEXT NOT NULL,
-  "user" JSONB NOT NULL DEFAULT '{"name": null, "avatar": null}',
+  profile JSONB NOT NULL DEFAULT '{"name": null, "avatar": null}',
   created_at TIMESTAMP DEFAULT NOW()
 );
 
