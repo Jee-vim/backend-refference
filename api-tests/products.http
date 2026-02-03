@@ -1,5 +1,5 @@
 ### Get All Products (Newest First)
-GET {{baseUrl}}/products?sort=newest&search=supp
+GET {{baseUrl}}/products?sort=newest
 
 ### Get All Products (Oldest First)
 GET {{baseUrl}}/products?sort=oldest
@@ -10,19 +10,19 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "name": "My Bini",
+  "name": "new prd with userid",
   "description": "My biniiii",
   "price": 149.99,
   "stock": 1
 }
 
 ### Update Product
-PUT {{baseUrl}}/products/0aa2cbf9-d9fa-4e3a-9d01-a1d751a2b254
+PUT {{baseUrl}}/products/6c1121c4-be90-4be1-899c-bf1ae1dc0f63
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "name": "Mechanical Keyboard Pro",
+  "name": "updated prd",
   "description": "Updated version with wireless support",
   "price": 179.99,
   "stock": 30
@@ -35,7 +35,7 @@ Content-Type: application/json
 
 {
   "ids": [
-    "796d83a1-705b-4395-927b-23194a210d7a",
-    "f237890b-80a1-4c12-9876-0987654321ab"
+    "c36bd588-6ca5-4b32-bcda-c1a6ac0894a6",
+    "4d077ae4-0dcf-40c2-89d0-256806151dd2"
   ]
 }
