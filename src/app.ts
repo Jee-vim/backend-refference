@@ -42,7 +42,7 @@ app.use("/auth", authRoutes);
 app.use("/profile", profileRoutes);
 app.use("/tasks", taskRoutes);
 app.use("/products", productRoutes);
-app.post("/file", fileRoutes);
+app.use("/file", fileRoutes);
 
 app.use((req: Request, res: Response) => {
   sendResponse(res, 404, null, `Route ${req.originalUrl} not found`);

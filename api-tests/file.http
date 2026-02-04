@@ -1,0 +1,11 @@
+### Upload
+POST {{baseUrl}}/file/upload
+Content-Type: application/json
+
+{ }
+
+### Delete
+POST {{baseUrl}}/file/delete/id
+Content-Type: application/json
+
+{ }
