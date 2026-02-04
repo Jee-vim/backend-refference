@@ -100,3 +100,4 @@ const LIMIT = 100
 export const authLimiter = createLimiter(5, 10);
 export const generalLimiter = createLimiter(LIMIT, MINUTE);
 export const userLimiter = createLimiter(LIMIT, MINUTE);
+export const uploadLimiter = createLimiter(10, 10);

@@ -3,12 +3,14 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import helmet from "helmet";
 
+import { generalLimiter, sendResponse } from "./utils/lib";
+import { errorHandler } from "./middleware/errror.middleware";
+
 import authRoutes from "./routes/auth.routes";
 import taskRoutes from "./routes/tasks.routes";
 import productRoutes from "./routes/products.routes";
 import profileRoutes from "./routes/profile.routes";
-import { generalLimiter, sendResponse } from "./utils/lib";
-import { errorHandler } from "./middleware/errror.middleware";
+import fileRoutes from "./routes/file.routes";
 
 const app = express();
 app.use(helmet({
@@ -40,6 +42,7 @@ app.use("/auth", authRoutes);
 app.use("/profile", profileRoutes);
 app.use("/tasks", taskRoutes);
 app.use("/products", productRoutes);
+app.post("/file", fileRoutes);
 
 app.use((req: Request, res: Response) => {
   sendResponse(res, 404, null, `Route ${req.originalUrl} not found`);
