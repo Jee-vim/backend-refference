@@ -1,0 +1,20 @@
+### Get User
+GET {{baseUrl}}/users
+Authorization: Bearer {{token}}
+
+### Get User By ID
+GET {{baseUrl}}/users/8cf6ce67-c67a-4e0b-bab5-2b1d987197f5
+Authorization: Bearer {{token}}
+ 
+### Update User
+PUT {{baseUrl}}/users
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "profile": {
+    "name": "changed",
+    "avatar": "https://bla.com"
+  },
+  "email": "change@ecjlmek.com"
+}

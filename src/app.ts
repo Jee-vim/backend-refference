@@ -10,7 +10,7 @@ import { errorHandler } from "./middleware/errror.middleware";
 import authRoutes from "./routes/auth.routes";
 import taskRoutes from "./routes/tasks.routes";
 import productRoutes from "./routes/products.routes";
-import profileRoutes from "./routes/profile.routes";
+import userRoutes from "./routes/users.routes";
 import fileRoutes from "./routes/file.routes";
 
 const app = express();
@@ -40,7 +40,7 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 });
 
 app.use("/auth", authRoutes);
-app.use("/profile", profileRoutes);
+app.use("/users", userRoutes);
 app.use("/tasks", taskRoutes);
 app.use("/products", productRoutes);
 app.use("/uploads", express.static(path.join(process.cwd(), "public/uploads")));

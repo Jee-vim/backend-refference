@@ -20,9 +20,9 @@
     - ~~mass assignment protection~~
     - ~~SQL injection awareness (even with ORM)~~
     - ~~rate limit per user, not just IP~~
-- file uploads (in progress)
+- file uploads
     - streaming uploads
-    - file size & type validation
+    - ~~file size & type validation~~
     - object storage (S3-compatible)
     - signed URLs
 - database integrity & transactions

@@ -16,6 +16,7 @@ const auth = (req: Request, res: Response, next: NextFunction) => {
     (req as any).userId = decoded.userId;
     next();
   } catch (err) {
+    console.log(err)
     return sendResponse(res, 401, null, "Invalid token");
   }
 };
