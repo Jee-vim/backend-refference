@@ -2,6 +2,7 @@ import express, { Request, Response, NextFunction } from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import helmet from "helmet";
+import path from "path";
 
 import { generalLimiter, sendResponse } from "./utils/lib";
 import { errorHandler } from "./middleware/errror.middleware";
@@ -42,6 +43,7 @@ app.use("/auth", authRoutes);
 app.use("/profile", profileRoutes);
 app.use("/tasks", taskRoutes);
 app.use("/products", productRoutes);
+app.use("/uploads", express.static(path.join(process.cwd(), "public/uploads")));
 app.use("/file", fileRoutes);
 
 app.use((req: Request, res: Response) => {

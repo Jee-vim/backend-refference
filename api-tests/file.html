@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quick Test</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f9f9f9; }
+        .box { border: 1px solid #ccc; padding: 20px; margin-bottom: 10px; border-radius: 5px; background: white; }
+        button { padding: 10px 15px; cursor: pointer; background: #28a745; color: white; border: none; border-radius: 4px; }
+        button.delete { background: #dc3545; margin-left: 10px; padding: 5px 10px; }
+        input { padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+        #log { background: #000; color: #0f0; padding: 15px; font-family: monospace; white-space: pre-wrap; overflow-x: auto; }
+        .file-item { margin-top: 10px; padding: 5px; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between; }
+    </style>
+</head>
+<body>
+
+    <div class="box">
+        <h3>1. Auth</h3>
+        <button onclick="doLogin()">Login (Hardcoded)</button>
+        <span id="authStatus">❌ No Token</span>
+    </div>
+
+    <div class="box">
+        <h3>2. Upload</h3>
+        <input type="file" id="filePicker" multiple>
+        <button onclick="doUpload()">Upload Files</button>
+    </div>
+
+    <div class="box">
+        <h3>3. Delete</h3>
+        <input type="text" id="deleteFileName" placeholder="filename.jpg">
+        <button onclick="doDelete(document.getElementById('deleteFileName').value)" style="background: #666;">Delete by Name</button>
+        <div id="fileList"></div>
+    </div>
+
+    <pre id="log">Logs...</pre>
+
+    <script>
+        const BASE_URL = "http://localhost:3000";
+        const EMAIL = "test123456@example.com"; 
+        const PASS = "password123";      
+        let token = "";
+
+        const log = (msg) => document.getElementById('log').innerText = JSON.stringify(msg, null, 2);
+
+        async function doLogin() {
+            try {
+                const res = await fetch(`${BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: EMAIL, password: PASS })
+                });
+                const data = await res.json();
+                token = data.accessToken || data.data?.accessToken;
+
+                if (token) {
+                    document.getElementById('authStatus').innerText = "✅ Logged In";
+                    log("Login Success");
+                } else {
+                    log("Login failed");
+                }
+            } catch (err) {
+                log("Error: " + err.message);
+            }
+        }
+
+        async function doUpload() {
+            const filePicker = document.getElementById('filePicker');
+            const files = filePicker.files;
+            if (!token) return alert("Login first!");
+            if (files.length === 0) return alert("Select files first!");
+
+            const fd = new FormData();
+            for (let i = 0; i < files.length; i++) {
+                fd.append('files', files[i]);
+            }
+
+            try {
+                const res = await fetch(`${BASE_URL}/file/upload`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: fd
+                });
+                const result = await res.json();
+                log(result);
+
+                // Update file list for easy deletion
+                if (result.success && result.data?.paths) {
+                    const list = document.getElementById('fileList');
+                    result.data.paths.forEach(p => {
+                        const fileName = p.split('/').pop();
+                        const div = document.createElement('div');
+                        div.className = 'file-item';
+                        div.innerHTML = `<span>${fileName}</span> <button class="delete" onclick="doDelete('${fileName}')">Delete</button>`;
+                        list.appendChild(div);
+                    });
+                }
+            } catch (err) {
+                log("Upload Error: " + err.message);
+            }
+        }
+
+        async function doDelete(fileName) {
+            if (!token) return alert("Login first!");
+            if (!fileName) return alert("Enter a filename!");
+
+            try {
+                const res = await fetch(`${BASE_URL}/file/delete/${fileName}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const result = await res.json();
+                log(result);
+                
+                if (result.success) {
+                    // Remove from UI list if it exists
+                    const items = document.querySelectorAll('.file-item');
+                    items.forEach(item => {
+                        if (item.innerText.includes(fileName)) item.remove();
+                    });
+                }
+            } catch (err) {
+                log("Delete Error: " + err.message);
+            }
+        }
+    </script>
+</body>
+</html>
