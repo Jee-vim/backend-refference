@@ -2,7 +2,7 @@ import {
   getUser,
   getUserById,
   updateUser,
-} from "../../src/controllers/users.controller";
+} from "../../src/controllers/user.controller";
 import * as profileService from "../../src/services/user.service";
 import * as lib from "../../src/utils/lib";
 
