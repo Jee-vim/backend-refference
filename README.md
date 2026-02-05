@@ -1,52 +1,51 @@
 ## TODO
-- ~~connect with postgreSQL~~
-- ~~auth jwt~~
-    - ~~auth session~~
-    - ~~CSRF protection~~
-    - ~~session invalidation~~
-    - ~~secure cookie flags~~
-- ~~profile~~
-- ~~CRUD~~
-- ~~filters (search,pagination,sort)~~
-- ~~form validation~~
-- ~~rate-limiter~~
-- ~~centralize response~~
-- ~~architecture~~
-    - ~~controller vs service separation~~
-    - ~~business logic not in routes~~
-- ~~security~~
-    - ~~helmet configuration~~
-    - ~~input sanitization~~
-    - ~~mass assignment protection~~
-    - ~~SQL injection awareness (even with ORM)~~
-    - ~~rate limit per user, not just IP~~
-- file uploads
-    - streaming uploads
-    - ~~file size & type validation~~
-    - object storage (S3-compatible)
-    - signed URLs
-- database integrity & transactions
-    - database transactions (commit / rollback)
-    - isolation levels
-    - unique constraints & foreign keys
-    - indexes + explain analyze
-    - migrations (up + down)
-    - discount
-- performance 
-    - caching (Redis)
-    - background jobs / queues
-    - graceful shutdown
-    - connection pooling
-- testing
-    - unit tests (services, not routes)
-    - integration tests (API)
-    - test database setup
-    - auth edge cases
-- API design
-    - consistent status codes
-    - DTOs / schemas
-    - versioning strategy
-- logging & observability
-    - structured logs
-    - request IDs
-    - audit logs
+- [ ] husky
+- [x] connect with postgreSQL
+- [x] auth jwt
+    - [x] auth session
+    - [x] CSRF protection
+    - [x] session invalidation
+    - [x] secure cookie flags
+- [x] CRUD
+- [x] filters (search,pagination,sort)
+- [x] rate-limiter
+- [x] centralize response
+- [x] architecture
+    - [x] controller vs service separation
+    - [x] business logic not in routes
+- [x] security
+    - [x] helmet configuration
+    - [x] input sanitization
+    - [x] mass assignment protection
+    - [x] SQL injection awareness (even with ORM)
+    - [x] rate limit per user, not just IP
+- [ ] file uploads
+    - [ ] streaming uploads
+    - [x] file size & type validation
+    - [ ] object storage (S3-compatible)
+    - [ ] signed URLs
+- [ ] database integrity & transactions
+    - [ ] database transactions (commit / rollback)
+    - [ ] isolation levels
+    - [ ] unique constraints & foreign keys
+    - [ ] indexes + explain analyze
+    - [ ] migrations (up + down)
+    - [ ] discount
+- [ ] performance 
+    - [ ] caching (Redis)
+    - [ ] background jobs / queues
+    - [ ] graceful shutdown
+    - [ ] connection pooling
+- [ ] testing
+    - [ ] unit tests (services, not routes)
+    - [ ] integration tests (API)
+    - [ ] test database setup
+    - [ ] auth edge cases
+- [ ] API design
+    - [ ] consistent status codes
+    - [ ] DTOs / schemas
+    - [ ] versioning strategy
+- [ ] logging & observability
+    - [ ] structured logs
+    - [ ] request IDs
+    - [ ] audit logs
