@@ -1,3 +1,4 @@
+import "express-async-errors";
 import express, { Request, Response, NextFunction } from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -14,25 +15,30 @@ import userRoutes from "./routes/users.routes";
 import fileRoutes from "./routes/file.routes";
 
 const app = express();
-app.use(helmet({
-  // Disables the Content-Security-Policy during development 
-  contentSecurityPolicy: process.env.NODE_ENV === "production" ? undefined : false,
-  crossOriginResourcePolicy: { policy: "cross-origin" }
-}));
-app.use(cors({
-  origin: (_, callback) => {
-    callback(null, true);
-  },
-  credentials: true, // This allows the browser to send/receive cookies
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"]
-}));
-app.use(generalLimiter)
+app.use(
+  helmet({
+    // Disables the Content-Security-Policy during development
+    contentSecurityPolicy:
+      process.env.NODE_ENV === "production" ? undefined : false,
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+  }),
+);
+app.use(
+  cors({
+    origin: (_, callback) => {
+      callback(null, true);
+    },
+    credentials: true, // This allows the browser to send/receive cookies
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
+app.use(generalLimiter);
 
 app.use(express.json());
 app.use(cookieParser());
 
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
   if (err instanceof SyntaxError && "status" in err && "body" in err) {
     return sendResponse(res, 400, null, "Invalid JSON format");
   }

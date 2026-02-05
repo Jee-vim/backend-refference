@@ -9,6 +9,7 @@ const MAX_SIZE = 5 * 1024 * 1024;
 
 export async function fileUpload(req: Request, res: Response) {
   const files = req.files as Express.Multer.File[];
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   const userId = (req as any).userId;
 
   if (!files || files.length === 0) {
@@ -22,7 +23,9 @@ export async function fileUpload(req: Request, res: Response) {
       throw new ValidationError(`File ${file.originalname} exceeds 5MB limit`);
     }
 
-    const isAllowedType = ALLOWED_TYPES.some(type => file.mimetype.startsWith(type));
+    const isAllowedType = ALLOWED_TYPES.some((type) =>
+      file.mimetype.startsWith(type),
+    );
     if (!isAllowedType) {
       throw new ValidationError(`File type ${file.mimetype} is not allowed`);
     }
@@ -36,7 +39,12 @@ export async function fileUpload(req: Request, res: Response) {
     uploadedPaths.push(`/uploads/${userId}/${file.originalname}`);
   }
 
-  return sendResponse(res, 201, { paths: uploadedPaths }, "Upload file successfully");
+  return sendResponse(
+    res,
+    201,
+    { paths: uploadedPaths },
+    "Upload file successfully",
+  );
 }
 
 export async function fileDelete(req: Request, res: Response) {
@@ -50,7 +58,13 @@ export async function fileDelete(req: Request, res: Response) {
     throw new ValidationError("Invalid filename");
   }
 
-  const filePath = path.join(process.cwd(), "public", "uploads", userId, filename);
+  const filePath = path.join(
+    process.cwd(),
+    "public",
+    "uploads",
+    userId,
+    filename,
+  );
 
   try {
     // Check if file exists first

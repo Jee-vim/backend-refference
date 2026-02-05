@@ -37,7 +37,7 @@
     - [ ] graceful shutdown
     - [ ] connection pooling
 - [ ] testing
-    - [ ] unit tests (services, not routes)
+    - [x] unit tests (services, not routes)
     - [ ] integration tests (API)
     - [ ] test database setup
     - [ ] auth edge cases
