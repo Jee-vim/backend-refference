@@ -39,7 +39,7 @@ export async function update(userId: string, data: { profile?: object; email?: s
                  END,
          updated_at = NOW()
      WHERE id = $3 
-     RETURNING id, email, profile, created_at`,
+     RETURNING id, email, profile, created_at, updated_at`,
     [profileJson, email, userId]
   );
 
