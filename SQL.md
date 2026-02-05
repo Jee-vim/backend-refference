@@ -1,4 +1,4 @@
-           POSTGRESQL TERMINAL & TABLE CHEAT SHEET
+# POSTGRESQL TERMINAL & TABLE CHEAT SHEET
 
 ## 1. PSQL SHELL COMMANDS (Navigating the Terminal)
 \l              : List all databases
@@ -43,16 +43,16 @@ ALTER TABLE products ALTER COLUMN name DROP NOT NULL;
 
 ## 4. DATA OPERATIONS (DML) 
 ### Insert
-INSERT INTO products (name, price, user_id) VALUES ('Laptop', 1200, 'user-uuid-here');
+INSERT INTO products (name, price, user_id) VALUES ($1, $2, $3);
 
 ### Update (Don't forget the WHERE clause!)
-UPDATE products SET price = 999 WHERE id = 'product-uuid' AND user_id = 'user-uuid';
+UPDATE products SET price = $1 WHERE id = $2 AND user_id = $3;
 
 ### Delete
-DELETE FROM products WHERE id = 'product-uuid' AND user_id = 'user-uuid';
+DELETE FROM products WHERE id = $1 AND user_id = $2;
 
 ### Select with Filtering and Sorting
-SELECT * FROM products WHERE price > 100 ORDER BY created_at DESC LIMIT 10 OFFSET 0;
+SELECT * FROM products WHERE price > $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3;
 
 ## 5. IMPORTANT TIPS TO AVOID ERRORS
 1. ALWAYS end your SQL commands with a semicolon (;).
