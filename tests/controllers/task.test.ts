@@ -5,7 +5,7 @@ import {
   updateTask,
   deleteTask,
   deleteBatchTasks,
-} from "../../src/controllers/tasks.controller";
+} from "../../src/controllers/task.controller";
 import * as taskService from "../../src/services/task.service";
 import * as lib from "../../src/utils/lib";
 import { ValidationError } from "../../src/errors/app.error";

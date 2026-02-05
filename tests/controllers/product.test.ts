@@ -5,7 +5,7 @@ import {
   updateProduct,
   deleteProduct,
   deleteBatchProducts,
-} from "../../src/controllers/products.controller"
+} from "../../src/controllers/product.controller"
 import * as productService from "../../src/services/product.service";
 import * as lib from "../../src/utils/lib";
 import { ValidationError } from "../../src/errors/app.error";
