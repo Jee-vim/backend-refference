@@ -1,5 +1,5 @@
 ## TODO
-- [ ] husky
+- [x] husky
 - [x] connect with postgreSQL
 - [x] auth jwt
     - [x] auth session
@@ -49,3 +49,4 @@
     - [ ] structured logs
     - [ ] request IDs
     - [ ] audit logs
+
