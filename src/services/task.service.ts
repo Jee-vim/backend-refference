@@ -9,10 +9,8 @@ interface GetTasksOptions {
   page: number;
 }
 
-export async function createTask(
-  userId: string,
-  data: { title: string; status: string },
-) {
+/* eslint-disable @typescript-eslint/no-explicit-any */
+export async function createTask(userId: string, data: any) {
   const [task] = await db("tasks")
     .insert({
       user_id: userId,
@@ -65,11 +63,8 @@ export async function getTaskById(userId: string, id: string) {
   return task;
 }
 
-export async function updateTask(
-  userId: string,
-  id: string,
-  body: { title: string; status: string },
-) {
+/* eslint-disable @typescript-eslint/no-explicit-any */
+export async function updateTask(userId: string, id: string, body: any) {
   const { title, status } = body || {};
 
   const [task] = await db("tasks")
