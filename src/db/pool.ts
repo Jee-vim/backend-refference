@@ -1,7 +1,6 @@
-import { Pool } from "pg";
+import knex from "knex";
+import config from "../knexfile";
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
+const db = knex(config);
 
-export default pool;
+export default db;
