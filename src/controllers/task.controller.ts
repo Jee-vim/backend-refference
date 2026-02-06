@@ -63,7 +63,7 @@ export const updateTask = async (req: Request, res: Response) => {
     throw new ValidationError("Invalid task id");
   }
 
-  const result = await taskService.updateTask(userId, id, req.query);
+  const result = await taskService.updateTask(userId, id, req.body);
 
   return sendResponse(res, 200, result, "Task updated successfully");
 };

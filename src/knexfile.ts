@@ -1,10 +1,17 @@
-import type { Knex } from "knex";
-import { resolve } from "path";
+import { fileURLToPath } from "url";
+import path from "path";
 import dotenv from "dotenv";
 
-dotenv.config({ path: resolve(process.cwd(), ".env") });
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const config: Knex.Config = {
+dotenv.config({
+  path: path.resolve(__dirname, "../.env"),
+});
+
+import type knex from "knex";
+
+const config: knex.Knex.Config = {
   client: "postgresql",
   connection: process.env.DATABASE_URL,
   migrations: {

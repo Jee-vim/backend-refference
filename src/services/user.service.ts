@@ -7,16 +7,16 @@ export async function get() {
     "email",
     "profile",
     "created_at",
-    "update_at",
+    "updated_at",
   );
 }
 
 export async function getById(userId: string) {
-  const result = await db("user")
+  const result = await db("users")
     .select("id", "email", "profile", "created_at", "updated_at")
     .where({ id: userId });
 
-  if (!result) {
+  if (!result?.[0]) {
     throw new NotFoundError("User not found");
   }
 

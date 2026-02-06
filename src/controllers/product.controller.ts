@@ -40,16 +40,9 @@ export const getProductById = async (req: Request, res: Response) => {
 };
 
 export const createProduct = async (req: Request, res: Response) => {
-  const { name, description, price, stock } = req.body;
   /* eslint-disable @typescript-eslint/no-explicit-any */
   const userId = (req as any).userId;
-  const result = await productService.createProduct(
-    userId,
-    name,
-    description,
-    price,
-    stock,
-  );
+  const result = await productService.createProduct(userId, req.body);
   return sendResponse(res, 201, result, "Product created successfully");
 };
 
@@ -57,20 +50,12 @@ export const updateProduct = async (req: Request, res: Response) => {
   const { id } = req.params;
   /* eslint-disable @typescript-eslint/no-explicit-any */
   const userId = (req as any).userId;
-  const { name, description, price, stock } = req.body;
 
   if (typeof id !== "string") {
     throw new ValidationError("Product ID must be a single string");
   }
 
-  const result = await productService.updateProduct(
-    userId,
-    id,
-    name,
-    description,
-    price,
-    stock,
-  );
+  const result = await productService.updateProduct(userId, id, req.body);
   return sendResponse(res, 200, result, "Product updated successfully");
 };
 

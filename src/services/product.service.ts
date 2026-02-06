@@ -1,32 +1,22 @@
+import { ICreateProduct, IQueryProduct } from "src/types/product";
 import db from "../db";
 import { NotFoundError } from "../errors/app.error";
 
-export async function createProduct(
-  userId: string,
-  name: string,
-  description: string,
-  price: number,
-  stock: number,
-) {
+export async function createProduct(userId: string, body: ICreateProduct) {
   const [product] = await db("products")
     .insert({
       user_id: userId,
-      name,
-      description,
-      price,
-      stock,
+      name: body.name,
+      description: body.description,
+      price: body.price,
+      stock: body.stock,
     })
     .returning("*");
 
   return product;
 }
 
-export async function getProducts(req: {
-  search?: string;
-  sort?: string;
-  limit: number;
-  offset: number;
-}) {
+export async function getProducts(req: IQueryProduct) {
   const { search, sort, limit, offset } = req;
 
   const query = db("products");
@@ -71,18 +61,15 @@ export async function getProductById(id: string) {
 export async function updateProduct(
   userId: string,
   id: string,
-  name: string,
-  description: string,
-  price: number,
-  stock: number,
+  body: ICreateProduct,
 ) {
   const [product] = await db("products")
     .where({ id, user_id: userId })
     .update({
-      name,
-      description,
-      price,
-      stock,
+      name: body.name,
+      description: body.description,
+      price: body.price,
+      stock: body.stock,
       updated_at: db.fn.now(),
     })
     .returning("*");

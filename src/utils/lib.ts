@@ -2,15 +2,20 @@ import { Request, Response, NextFunction } from "express";
 import { z, ZodError } from "zod";
 import rateLimit from "express-rate-limit";
 
-export const getSafeParams = (query: any) => {
-  const page = Math.max(1, parseInt(query.page) || 1);
-  const limit = Math.max(1, parseInt(query.limit) || 10);
+export const getSafeParams = (query: { page?: string; limit?: string }) => {
+  const page = Math.max(1, parseInt(query.page ?? "1"));
+  const limit = Math.max(1, parseInt(query.limit ?? "10"));
   const offset = (page - 1) * limit;
 
   return { page, limit, offset };
 };
 
-export const sendResponse = (res: Response, code: number, data: any = null, message: string = "") => {
+export const sendResponse = (
+  res: Response,
+  code: number,
+  data: unknown = null,
+  message: string = "",
+) => {
   return res.status(code).json({
     success: code >= 200 && code < 300,
     code,
@@ -22,17 +27,15 @@ export const sendResponse = (res: Response, code: number, data: any = null, mess
 export const sendPaginatedResponse = (
   res: Response,
   code: number,
-  data: any[],
+  data: unknown[],
   total_items: number,
-  page: any,
-  limit: any,
-  message: string = ""
+  page: number = 1,
+  limit: number = 10,
+  message: string = "",
 ) => {
-  const safePage = Math.max(1, parseInt(page) || 1);
-  const safeLimit = Math.max(1, parseInt(limit) || 10);
   const safeTotalItems = Math.max(0, total_items || 0);
 
-  const total_pages = Math.ceil(safeTotalItems / safeLimit);
+  const total_pages = Math.ceil(safeTotalItems / limit);
 
   return res.status(code).json({
     success: code >= 200 && code < 300,
@@ -43,14 +46,17 @@ export const sendPaginatedResponse = (
       pagination: {
         total_items: safeTotalItems,
         total_pages,
-        current_page: safePage,
-        limit: safeLimit,
+        current_page: page,
+        limit,
       },
     },
   });
 };
 
-export const validate = (schema: z.ZodTypeAny, target: "body" | "query" | "params" = "body") => {
+export const validate = (
+  schema: z.ZodTypeAny,
+  target: "body" | "query" | "params" = "body",
+) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
       const parsedData = await schema.parseAsync(req[target] || {});
@@ -62,7 +68,7 @@ export const validate = (schema: z.ZodTypeAny, target: "body" | "query" | "param
       }
 
       next();
-    } catch (error: any) {
+    } catch (error) {
       if (error instanceof ZodError) {
         const message = error.issues
           .map((e) => `${e.path.join(".")}: ${e.message}`)
@@ -81,6 +87,7 @@ export const createLimiter = (maxRequests: number, windowMinutes: number) => {
     standardHeaders: true,
     legacyHeaders: false,
     // This keyGenerator works for both public and private routes
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     keyGenerator: (req: any) => req.user?.userId || req.ip,
     // Disable the IPv6 warning for custom key generators
     validate: { keyGeneratorIpFallback: false },
@@ -89,15 +96,15 @@ export const createLimiter = (maxRequests: number, windowMinutes: number) => {
         res,
         429,
         null,
-        `Too many requests. Please try again after ${windowMinutes} minutes.`
+        `Too many requests. Please try again after ${windowMinutes} minutes.`,
       );
     },
   });
 };
 
-const MINUTE = 15
-const LIMIT = 100
-export const authLimiter = createLimiter(5, 10);
+const MINUTE = 15;
+const LIMIT = 100;
+export const authLimiter = createLimiter(10, 10);
 export const generalLimiter = createLimiter(LIMIT, MINUTE);
 export const userLimiter = createLimiter(LIMIT, MINUTE);
 export const uploadLimiter = createLimiter(10, 10);

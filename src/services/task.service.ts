@@ -1,21 +1,13 @@
+import { ICreateTask, IQueryTask } from "src/types/task";
 import db from "../db";
 import { NotFoundError } from "../errors/app.error";
 
-interface GetTasksOptions {
-  status?: string;
-  search?: string;
-  limit: number;
-  offset: number;
-  page: number;
-}
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export async function createTask(userId: string, data: any) {
+export async function createTask(userId: string, body: ICreateTask) {
   const [task] = await db("tasks")
     .insert({
       user_id: userId,
-      title: data.title,
-      status: data.status ?? "PENDING",
+      title: body.title,
+      status: body.status ?? "PENDING",
     })
     .returning("*");
 
@@ -24,7 +16,7 @@ export async function createTask(userId: string, data: any) {
 
 export async function getTasks(
   userId: string,
-  { status, search, limit, page, offset }: GetTasksOptions,
+  { status, search, limit, page, offset }: IQueryTask,
 ) {
   const query = db("tasks").where({ user_id: userId });
 
@@ -63,15 +55,16 @@ export async function getTaskById(userId: string, id: string) {
   return task;
 }
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export async function updateTask(userId: string, id: string, body: any) {
-  const { title, status } = body || {};
-
+export async function updateTask(
+  userId: string,
+  id: string,
+  body: ICreateTask,
+) {
   const [task] = await db("tasks")
     .where({ id, user_id: userId })
     .update({
-      title: title ?? undefined,
-      status: status ?? undefined,
+      title: body.title,
+      status: body.status,
       updated_at: db.fn.now(),
     })
     .returning("*");

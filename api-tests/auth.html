@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Auth Test</title>
+  <style>
+    body {
+      font-family: monospace;
+      padding: 20px;
+      background: #111;
+      color: #eee;
+    }
+    button {
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+    pre {
+      background: #1e1e1e;
+      padding: 10px;
+      max-height: 300px;
+      overflow: auto;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Auth Test</h2>
+
+<button onclick="login()">Login</button>
+<button onclick="refresh()">Refresh</button>
+<button onclick="getTasks()">Get Tasks</button>
+<button onclick="logout()">Logout</button>
+
+<h3>Response</h3>
+<pre id="output">(waiting for API)</pre>
+
+<script>
+  const baseUrl = "http://localhost:3000";
+  let accessToken = null;
+
+  async function showResponse(res) {
+    const text = await res.text();
+    let body;
+
+    try {
+      body = JSON.parse(text);
+    } catch {
+      body = text;
+    }
+
+    document.getElementById("output").textContent =
+      `HTTP ${res.status}\n\n` +
+      (typeof body === "string"
+        ? body
+        : JSON.stringify(body, null, 2));
+
+    return body;
+  }
+
+  async function login() {
+    const res = await fetch(`${baseUrl}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({
+        email: "test@example.com",
+        password: "password123",
+      }),
+    });
+
+    const body = await showResponse(res);
+    accessToken = body?.data?.accessToken ?? null;
+  }
+
+  async function refresh() {
+    const res = await fetch(`${baseUrl}/auth/refresh`, {
+      method: "POST",
+      credentials: "include",
+    });
+
+    const body = await showResponse(res);
+    accessToken = body?.data?.accessToken ?? accessToken;
+  }
+
+  async function getTasks() {
+    const res = await fetch(`${baseUrl}/tasks`, {
+      headers: {
+        Authorization: accessToken
+          ? `Bearer ${accessToken}`
+          : "",
+      },
+    });
+
+    await showResponse(res);
+  }
+
+  async function logout() {
+    const res = await fetch(`${baseUrl}/auth/logout`, {
+      method: "POST",
+      credentials: "include",
+    });
+
+    accessToken = null;
+    await showResponse(res);
+  }
+</script>
+
+</body>
+</html>
