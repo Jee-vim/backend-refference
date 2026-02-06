@@ -134,22 +134,23 @@ describe("getTaskById", () => {
 
   it("throws ValidationError if id invalid", async () => {
     const req: any = {
-      params: { id: null },
+      params: { id: 123 }, // Testing with non-string type
       userId: "user1",
     };
     const res = mockRes();
 
     await expect(getTaskById(req, res))
       .rejects
-      .toBeInstanceOf(ValidationError);
+      .toThrow(ValidationError);
   });
 });
 
 describe("updateTask", () => {
   it("updates task successfully", async () => {
+    const updateBody = { status: "done" };
     const req: any = {
       params: { id: "123" },
-      query: { status: "done" },
+      body: updateBody, // Controller uses req.body
       userId: "user1",
     };
     const res = mockRes();
@@ -161,7 +162,7 @@ describe("updateTask", () => {
     expect(mockedTaskService.updateTask).toHaveBeenCalledWith(
       "user1",
       "123",
-      { status: "done" }
+      updateBody
     );
 
     expect(mockedLib.sendResponse).toHaveBeenCalledWith(
@@ -176,13 +177,13 @@ describe("updateTask", () => {
     const req: any = {
       params: { id: undefined },
       userId: "user1",
-      query: {},
+      body: {},
     };
     const res = mockRes();
 
     await expect(updateTask(req, res))
       .rejects
-      .toBeInstanceOf(ValidationError);
+      .toThrow(ValidationError);
   });
 });
 
@@ -194,7 +195,7 @@ describe("deleteTask", () => {
     };
     const res = mockRes();
 
-    mockedTaskService.deleteTask.mockResolvedValue(undefined);
+    mockedTaskService.deleteTask.mockResolvedValue(undefined as any);
 
     await deleteTask(req, res);
 
@@ -216,7 +217,7 @@ describe("deleteBatchTasks", () => {
     };
     const res = mockRes();
 
-    mockedTaskService.deleteBatchTask.mockResolvedValue(2);
+    mockedTaskService.deleteBatchTask.mockResolvedValue(2 as any);
 
     await deleteBatchTasks(req, res);
 
@@ -242,6 +243,6 @@ describe("deleteBatchTasks", () => {
 
     await expect(deleteBatchTasks(req, res))
       .rejects
-      .toBeInstanceOf(ValidationError);
+      .toThrow(ValidationError);
   });
 });

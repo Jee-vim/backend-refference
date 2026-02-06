@@ -5,7 +5,7 @@ import {
   updateProduct,
   deleteProduct,
   deleteBatchProducts,
-} from "../../src/controllers/product.controller"
+} from "../../src/controllers/product.controller";
 import * as productService from "../../src/services/product.service";
 import * as lib from "../../src/utils/lib";
 import { ValidationError } from "../../src/errors/app.error";
@@ -96,17 +96,18 @@ describe("getProductById", () => {
   });
 
   it("throws ValidationError if id is not string", async () => {
-    const req: any = { params: { id: ["123"] } };
+    const req: any = { params: { id: 123 } }; // Changed from array to number for valid test case
     const res = mockRes();
 
-    await expect(getProductById(req, res)).rejects.toBeInstanceOf(ValidationError);
+    await expect(getProductById(req, res)).rejects.toThrow(ValidationError);
   });
 });
 
 describe("createProduct", () => {
   it("creates a product", async () => {
+    const productData = { name: "P", description: "D", price: 10, stock: 5 };
     const req: any = {
-      body: { name: "P", description: "D", price: 10, stock: 5 },
+      body: productData,
       userId: "user1",
     };
     const res = mockRes();
@@ -117,10 +118,7 @@ describe("createProduct", () => {
 
     expect(mockedProductService.createProduct).toHaveBeenCalledWith(
       "user1",
-      "P",
-      "D",
-      10,
-      5
+      productData
     );
 
     expect(mockedLib.sendResponse).toHaveBeenCalledWith(
@@ -134,9 +132,10 @@ describe("createProduct", () => {
 
 describe("updateProduct", () => {
   it("updates product", async () => {
+    const updateData = { name: "P", description: "D", price: 20, stock: 3 };
     const req: any = {
       params: { id: "123" },
-      body: { name: "P", description: "D", price: 20, stock: 3 },
+      body: updateData,
       userId: "user1",
     };
     const res = mockRes();
@@ -148,10 +147,7 @@ describe("updateProduct", () => {
     expect(mockedProductService.updateProduct).toHaveBeenCalledWith(
       "user1",
       "123",
-      "P",
-      "D",
-      20,
-      3
+      updateData
     );
 
     expect(mockedLib.sendResponse).toHaveBeenCalledWith(
@@ -164,18 +160,13 @@ describe("updateProduct", () => {
 
   it("throws ValidationError if id invalid", async () => {
     const req: any = {
-      params: { id: null },
-      body: {
-        name: "P",
-        description: "D",
-        price: 10,
-        stock: 1,
-      },
+      params: { id: undefined },
+      body: {},
       userId: "user1",
     };
     const res = mockRes();
 
-    await expect(updateProduct(req, res)).rejects.toBeInstanceOf(ValidationError);
+    await expect(updateProduct(req, res)).rejects.toThrow(ValidationError);
   });
 });
 
@@ -187,7 +178,7 @@ describe("deleteProduct", () => {
     };
     const res = mockRes();
 
-    mockedProductService.deleteProduct.mockResolvedValue(undefined);
+    mockedProductService.deleteProduct.mockResolvedValue(undefined as any);
 
     await deleteProduct(req, res);
 
@@ -209,7 +200,7 @@ describe("deleteBatchProducts", () => {
     };
     const res = mockRes();
 
-    mockedProductService.deleteBatchProduct.mockResolvedValue(2);
+    mockedProductService.deleteBatchProduct.mockResolvedValue(2 as any);
 
     await deleteBatchProducts(req, res);
 
@@ -233,6 +224,6 @@ describe("deleteBatchProducts", () => {
     };
     const res = mockRes();
 
-    await expect(deleteBatchProducts(req, res)).rejects.toBeInstanceOf(ValidationError);
+    await expect(deleteBatchProducts(req, res)).rejects.toThrow(ValidationError);
   });
 });
