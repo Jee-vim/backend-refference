@@ -1,51 +1,48 @@
-import pool from "../db/pool";
+import db from "../db";
 import { NotFoundError } from "../errors/app.error";
 
 export async function get() {
-  const result = await pool.query(
-    "SELECT id, email, profile, created_at, updated_at FROM users",
-    []
+  return await db("users").select(
+    "id",
+    "email",
+    "profile",
+    "created_at",
+    "update_at",
   );
-
-  return result.rows;
 }
 
 export async function getById(userId: string) {
-  const result = await pool.query(
-    "SELECT id, email, profile, created_at, updated_at FROM users WHERE id = $1",
-    [userId]
-  );
+  const result = await db("user")
+    .select("id", "email", "profile", "created_at", "updated_at")
+    .where({ id: userId });
 
-  if (result.rowCount === 0) {
+  if (!result) {
     throw new NotFoundError("User not found");
   }
 
-  return result.rows[0];
+  return result;
 }
 
-export async function update(userId: string, data: { profile?: object; email?: string }) {
+export async function update(
+  userId: string,
+  data: { profile?: object; email?: string },
+) {
   const { profile, email } = data;
-  const profileJson = profile ? JSON.stringify(profile) : null;
 
-  const result = await pool.query(
-    `UPDATE users 
-     SET profile = CASE 
-                     WHEN $1::jsonb IS NOT NULL THEN profile || $1::jsonb 
-                     ELSE profile 
-                   END,
-         email = CASE 
-                   WHEN $2::text IS NOT NULL AND $2::text IS DISTINCT FROM email THEN $2::text 
-                   ELSE email 
-                 END,
-         updated_at = NOW()
-     WHERE id = $3 
-     RETURNING id, email, profile, created_at, updated_at`,
-    [profileJson, email, userId]
-  );
+  const user = await db("users")
+    .where({ id: userId })
+    .update({
+      profile: profile
+        ? db.raw("profile || ?::jsonb", [JSON.stringify(profile)])
+        : db.ref("profile"),
+      email: email || db.ref("email"),
+      updated_at: db.fn.now(),
+    })
+    .returning(["id", "email", "profile", "created_at", "updated_at"]);
 
-  if (result.rowCount === 0) {
+  if (!user || user.length === 0) {
     throw new NotFoundError("User not found");
   }
 
-  return result.rows[0];
+  return user[0];
 }

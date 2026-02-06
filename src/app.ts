@@ -1,4 +1,3 @@
-import "express-async-errors";
 import express, { Request, Response, NextFunction } from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -6,7 +5,7 @@ import helmet from "helmet";
 import path from "path";
 
 import { generalLimiter, sendResponse } from "./utils/lib";
-import { errorHandler } from "./middleware/errror.middleware";
+import { errorHandler } from "./middleware/error.middleware";
 
 import authRoutes from "./routes/auth.routes";
 import taskRoutes from "./routes/tasks.routes";

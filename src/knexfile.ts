@@ -1,8 +1,8 @@
 import type { Knex } from "knex";
-import dotenv from "dotenv";
 import { resolve } from "path";
+import dotenv from "dotenv";
 
-dotenv.config({ path: resolve(__dirname, "../.env") });
+dotenv.config({ path: resolve(process.cwd(), ".env") });
 
 const config: Knex.Config = {
   client: "postgresql",

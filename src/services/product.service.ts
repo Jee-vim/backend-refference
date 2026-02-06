@@ -1,79 +1,113 @@
-import pool from "../db/pool";
+import db from "../db";
 import { NotFoundError } from "../errors/app.error";
 
-export async function createProduct(userId: string, name: string, description: string, price: number, stock: number) {
-  const result = await pool.query(
-    "INSERT INTO products (user_id, name, description, price, stock) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-    [userId, name, description, price, stock]
-  );
-  return result.rows[0];
+export async function createProduct(
+  userId: string,
+  name: string,
+  description: string,
+  price: number,
+  stock: number,
+) {
+  const [product] = await db("products")
+    .insert({
+      user_id: userId,
+      name,
+      description,
+      price,
+      stock,
+    })
+    .returning("*");
+
+  return product;
 }
 
-export async function getProducts(req: { search?: string, sort?: string, limit: number, offset: number }) {
+export async function getProducts(req: {
+  search?: string;
+  sort?: string;
+  limit: number;
+  offset: number;
+}) {
   const { search, sort, limit, offset } = req;
-  let conditions = [];
-  let params: any[] = [];
+
+  const query = db("products");
 
   if (search) {
     const cleanSearch = `%${search.trim()}%`;
-    params.push(cleanSearch);
-    const idx = params.length;
-    conditions.push(`(name ILIKE $${idx} OR COALESCE(description, '') ILIKE $${idx})`);
+    query.where((builder) => {
+      builder
+        .where("name", "ilike", cleanSearch)
+        .orWhere("description", "ilike", cleanSearch);
+    });
   }
 
-  const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+  const countQuery = query.clone().count("* as count").first();
 
-  let orderBy = "ORDER BY created_at DESC";
   if (sort === "oldest") {
-    orderBy = "ORDER BY created_at ASC";
+    query.orderBy("created_at", "asc");
+  } else {
+    query.orderBy("created_at", "desc");
   }
 
-  const dataSql = `SELECT * FROM products ${whereClause} ${orderBy} LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
-  const result = await pool.query(dataSql, [...params, limit, offset]);
-
-  const countSql = `SELECT COUNT(*) FROM products ${whereClause}`;
-  const countResult = await pool.query(countSql, params);
+  const [data, countResult] = await Promise.all([
+    query.limit(limit).offset(offset),
+    countQuery,
+  ]);
 
   return {
-    result: result.rows,
-    countResult: parseInt(countResult.rows[0].count) || 0
+    result: data,
+    countResult: parseInt((countResult?.count as string) || "0", 10),
   };
 }
 
 export async function getProductById(id: string) {
-  const result = await pool.query("SELECT * FROM products WHERE id = $1", [id]);
+  const product = await db("products").where({ id }).first();
 
-  if (result.rowCount === 0) {
+  if (!product) {
     throw new NotFoundError("Product not found");
   }
-  return result.rows[0];
+  return product;
 }
 
-export async function updateProduct(userId: string, id: string, name: string, description: string, price: number, stock: number) {
-  const result = await pool.query(
-    "UPDATE products SET name = $1, description = $2, price = $3, stock = $4 WHERE id = $5 AND user_id = $6 RETURNING *",
-    [name, description, price, stock, id, userId]
-  );
+export async function updateProduct(
+  userId: string,
+  id: string,
+  name: string,
+  description: string,
+  price: number,
+  stock: number,
+) {
+  const [product] = await db("products")
+    .where({ id, user_id: userId })
+    .update({
+      name,
+      description,
+      price,
+      stock,
+      updated_at: db.fn.now(),
+    })
+    .returning("*");
 
-  if (result.rowCount === 0) {
+  if (!product) {
     throw new NotFoundError("Product not found");
   }
-  return result.rows[0];
+  return product;
 }
 
 export async function deleteProduct(userId: string, id: string) {
-  const result = await pool.query("DELETE FROM products WHERE id = $1 AND user_id = $2 RETURNING id", [id, userId]);
+  const deletedCount = await db("products")
+    .where({ id, user_id: userId })
+    .delete();
 
-  if (result.rowCount === 0) {
+  if (deletedCount === 0) {
     throw new NotFoundError("Product not found");
   }
 }
 
 export async function deleteBatchProduct(userId: string, ids: string[]) {
-  const result = await pool.query(
-    "DELETE FROM products WHERE id = ANY($1) AND user_id = $2 RETURNING id",
-    [ids, userId]
-  );
+  const deletedCount = await db("products")
+    .whereIn("id", ids)
+    .andWhere({ user_id: userId })
+    .delete();
 
-  return result.rowCount;
+  return deletedCount;
 }

@@ -1,6 +1,13 @@
 import { Router } from "express";
 import auth from "../middleware/auth.middleware";
-import { createTask, getTasks, getTaskById, updateTask, deleteTask, deleteBatchTasks } from "../controllers/tasks.controller";
+import {
+  createTask,
+  getTasks,
+  getTaskById,
+  updateTask,
+  deleteTask,
+  deleteBatchTasks,
+} from "../controllers/task.controller";
 import { userLimiter, validate } from "../utils/lib";
 import { createTaskSchema } from "../schemas/tasks.schema";
 import { queryTaskSchema } from "../schemas/global.schema";
@@ -8,7 +15,7 @@ import { queryTaskSchema } from "../schemas/global.schema";
 const router = Router();
 
 router.use(auth);
-router.use(userLimiter)
+router.use(userLimiter);
 
 router.get("/", validate(queryTaskSchema, "query"), getTasks);
 router.post("/", validate(createTaskSchema), createTask);
